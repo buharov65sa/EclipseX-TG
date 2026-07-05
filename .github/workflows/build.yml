@@ -13,9 +13,10 @@ jobs:
 
       - name: Clone AyuGram4A
         run: |
-          git clone --recursive https://github.com/AyuGram/AyuGram4A.git source
+          git clone https://github.com/AyuGram/AyuGram4A.git source
           cd source
-          git submodule init
+          rm -rf .gitmodules TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary
+          git submodule deinit -f --all 2>/dev/null || true
 
       - name: Apply EclipseX patches
         run: |
@@ -23,16 +24,15 @@ jobs:
           sed -i 's/APP_PACKAGE=com.radolyn.ayugram/APP_PACKAGE=com.eclipsextg.messenger/' gradle.properties
           sed -i 's|<string name="AppName">Telegram</string>|<string name="AppName">EclipseX TG</string>|' TMessagesProj/src/main/res/values/strings.xml
           sed -i 's|com.exteragram.messenger.DefaultIcon|com.eclipsextg.messenger.DefaultIcon|' TMessagesProj/src/main/AndroidManifest.xml
-          sed -i 's/showIdAndDc = preferences.getInt("showIdAndDc", 2)/showIdAndDc = 2/' TMessagesProj/src/main/java/com/exteragram/messenger/ExteraConfig.java
 
       - name: Create API keys
         run: |
           cd source
           cat > API_KEYS << 'APIEOF'
-          APP_ID=6
-          APP_HASH=eb06d4abfb49dc3eeb1aeb98ae0f581e
-          MAPS_V2_API=AIzaSyBVIDRp8mTaPq4NYUc7Uq3W3n8S1
-          APIEOF
+APP_ID=6
+APP_HASH=eb06d4abfb49dc3eeb1aeb98ae0f581e
+MAPS_V2_API=AIzaSyBVIDRp8mTaPq4NYUc7Uq3W3n8S1
+APIEOF
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
