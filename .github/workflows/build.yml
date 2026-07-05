@@ -1,0 +1,61 @@
+name: Build EclipseX TG APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone AyuGram4A
+        run: |
+          git clone --recursive https://github.com/AyuGram/AyuGram4A.git source
+          cd source
+          git submodule init
+
+      - name: Apply EclipseX patches
+        run: |
+          cd source
+          sed -i 's/APP_PACKAGE=com.radolyn.ayugram/APP_PACKAGE=com.eclipsextg.messenger/' gradle.properties
+          sed -i 's|<string name="AppName">Telegram</string>|<string name="AppName">EclipseX TG</string>|' TMessagesProj/src/main/res/values/strings.xml
+          sed -i 's|com.exteragram.messenger.DefaultIcon|com.eclipsextg.messenger.DefaultIcon|' TMessagesProj/src/main/AndroidManifest.xml
+          sed -i 's/showIdAndDc = preferences.getInt("showIdAndDc", 2)/showIdAndDc = 2/' TMessagesProj/src/main/java/com/exteragram/messenger/ExteraConfig.java
+
+      - name: Create API keys
+        run: |
+          cd source
+          cat > API_KEYS << 'APIEOF'
+          APP_ID=6
+          APP_HASH=eb06d4abfb49dc3eeb1aeb98ae0f581e
+          MAPS_V2_API=AIzaSyBVIDRp8mTaPq4NYUc7Uq3W3n8S1
+          APIEOF
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: |
+          sdkmanager --install 'ndk;21.4.7075529' 'cmake;3.22.1'
+
+      - name: Build APK
+        run: |
+          cd source
+          chmod +x gradlew
+          ./gradlew assembleArm64 --no-daemon -Dorg.gradle.jvmargs=-Xmx2g
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: EclipseX-TG-APK
+          path: source/TMessagesProj/build/outputs/apk/arm64/release/*.apk
+          if-no-files-found: error
