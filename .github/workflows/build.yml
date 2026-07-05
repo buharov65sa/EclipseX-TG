@@ -15,8 +15,8 @@ jobs:
         run: |
           git clone https://github.com/AyuGram/AyuGram4A.git source
           cd source
-          rm -rf .gitmodules TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary
-          git submodule deinit -f --all 2>/dev/null || true
+          rm -f .gitmodules
+          rm -rf TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary
 
       - name: Apply EclipseX patches
         run: |
