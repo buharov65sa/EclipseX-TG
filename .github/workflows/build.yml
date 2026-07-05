@@ -23,12 +23,14 @@ jobs:
           sed -i s/APP_PACKAGE=com.radolyn.ayugram/APP_PACKAGE=com.eclipsextg.messenger/ gradle.properties
           sed -i 's|<string name=AppName>Telegram</string>|<string name=AppName>EclipseX TG</string>|' TMessagesProj/src/main/res/values/strings.xml
           sed -i 's|com.exteragram.messenger.DefaultIcon|com.eclipsextg.messenger.DefaultIcon|' TMessagesProj/src/main/AndroidManifest.xml
+          # Remove Google Services plugin
+          sed -i '/google-services/d' TMessagesProj/build.gradle
+          sed -i '/com.google.gms.google-services/d' build.gradle
 
       - name: Create config files
         run: |
           cd source
           printf 'APP_ID=6\nAPP_HASH=eb06d4abfb49dc3eeb1aeb98ae0f581e\nMAPS_V2_API=x\n' > API_KEYS
-          printf '{\n  project_info: {\n    project_number: 0,\n    project_id: eclipsextg\n  },\n  client: [{\n    client_info: {\n      mobilesdk_app_id: 1:0:android:0000000000000000,\n      android_client_info: {\n        package_name: com.eclipsextg.messenger\n      }\n    },\n    oauth_client: [],\n    api_key: [{current_key: x}],\n    services: {\n      analytics_service: {status: 1},\n      appinvite_service: {status: 1},\n      ads_service: {status: 2}\n    }\n  }],\n  configuration_version: 1\n}\n' > TMessagesProj/google-services.json
 
       - name: Setup Java
         uses: actions/setup-java@v4
