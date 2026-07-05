@@ -28,32 +28,7 @@ jobs:
         run: |
           cd source
           printf 'APP_ID=6\nAPP_HASH=eb06d4abfb49dc3eeb1aeb98ae0f581e\nMAPS_V2_API=x\n' > API_KEYS
-          cat > TMessagesProj/google-services.json << 'GEOF'
-          {
-            project_info: {
-              project_number: 0,
-              project_id: eclipsextg
-            },
-            client: [
-              {
-                client_info: {
-                  mobilesdk_app_id: 1:0:android:0000000000000000,
-                  android_client_info: {
-                    package_name: com.eclipsextg.messenger
-                  }
-                },
-                oauth_client: [],
-                api_key: [{current_key: AIzaSy00000000000000000000000000000000000}],
-                services: {
-                  analytics_service: {status: 1},
-                  appinvite_service: {status: 1},
-                  ads_service: {status: 2}
-                }
-              }
-            ],
-            configuration_version: 1
-          }
-GEOF
+          printf '{\n  project_info: {\n    project_number: 0,\n    project_id: eclipsextg\n  },\n  client: [{\n    client_info: {\n      mobilesdk_app_id: 1:0:android:0000000000000000,\n      android_client_info: {\n        package_name: com.eclipsextg.messenger\n      }\n    },\n    oauth_client: [],\n    api_key: [{current_key: x}],\n    services: {\n      analytics_service: {status: 1},\n      appinvite_service: {status: 1},\n      ads_service: {status: 2}\n    }\n  }],\n  configuration_version: 1\n}\n' > TMessagesProj/google-services.json
 
       - name: Setup Java
         uses: actions/setup-java@v4
