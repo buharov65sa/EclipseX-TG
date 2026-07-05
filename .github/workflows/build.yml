@@ -21,11 +21,14 @@ jobs:
         run: |
           cd source
           sed -i s/APP_PACKAGE=com.radolyn.ayugram/APP_PACKAGE=com.eclipsextg.messenger/ gradle.properties
+          sed -i 's|<string name=AppName>Telegram</string>|<string name=AppName>EclipseX TG</string>|' TMessagesProj/src/main/res/values/strings.xml
+          sed -i 's|com.exteragram.messenger.DefaultIcon|com.eclipsextg.messenger.DefaultIcon|' TMessagesProj/src/main/AndroidManifest.xml
 
-      - name: API keys
+      - name: Create config files
         run: |
           cd source
           printf 'APP_ID=6\nAPP_HASH=eb06d4abfb49dc3eeb1aeb98ae0f581e\nMAPS_V2_API=x\n' > API_KEYS
+          echo '{}' > TMessagesProj/google-services.json
 
       - name: Setup Java
         uses: actions/setup-java@v4
