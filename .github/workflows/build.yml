@@ -9,8 +9,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Clone AyuGram
-        env:
-          GIT_TERMINAL_PROMPT: 0
         run: |
           git clone https://github.com/AyuGram/AyuGram4A.git source
           cd source
@@ -19,14 +17,14 @@ jobs:
       - name: Create proprietary stubs
         run: |
           mkdir -p source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary
-          printf 'package com.radolyn.ayugram.proprietary;\nimport org.telegram.messenger.MessageObject;\npublic class AyuHistoryHook {\npublic static final boolean INJECTED = false;\npublic static boolean onMessageReceive(long dialogId, int maxId, int offset) { return false; }\npublic static boolean shouldSkipMsg(MessageObject messageObject) { return false; }\npublic static void onMsgReceive(MessageObject messageObject) {}\n}\n' > source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary/AyuHistoryHook.java
+          printf 'package com.radolyn.ayugram.proprietary;\nimport org.telegram.messenger.MessageObject;\npublic class AyuHistoryHook {\npublic static boolean INJECTED = false;\npublic static boolean onMessageReceive(long dialogId, int maxId, int offset) { return false; }\npublic static boolean shouldSkipMsg(MessageObject messageObject) { return false; }\npublic static void onMsgReceive(MessageObject messageObject) {}\n}\n' > source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary/AyuHistoryHook.java
           printf 'package com.radolyn.ayugram.proprietary;\nimport org.telegram.tgnet.TLRPC;\nimport org.telegram.messenger.MessageObject;\npublic class AyuMessageUtils {\npublic static boolean canShowMessage(TLRPC.Message message, boolean isBot) { return true; }\npublic static boolean showEdited(MessageObject messageObject) { return false; }\npublic static boolean skipRead(MessageObject messageObject) { return false; }\n}\n' > source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary/AyuMessageUtils.java
 
       - name: Patch
         run: |
           cd source
-          sed -i s/APP_PACKAGE=com.radolyn.ayugram/APP_PACKAGE=com.eclipsextg.messenger/ gradle.properties
-          sed -i 's|<string name=AppName>Telegram</string>|<string name=AppName>EclipseX TG</string>|' TMessagesProj/src/main/res/values/strings.xml
+          sed -i 's/APP_PACKAGE=com.radolyn.ayugram/APP_PACKAGE=com.eclipsextg.messenger/' gradle.properties
+          sed -i 's|<string name="AppName">Telegram</string>|<string name="AppName">EclipseX TG</string>|' TMessagesProj/src/main/res/values/strings.xml
           sed -i 's|com.exteragram.messenger.DefaultIcon|com.eclipsextg.messenger.DefaultIcon|' TMessagesProj/src/main/AndroidManifest.xml
           sed -i '/google-services/d' TMessagesProj/build.gradle
           sed -i '/com.google.gms.google-services/d' build.gradle
@@ -34,7 +32,7 @@ jobs:
       - name: Create API keys
         run: |
           cd source
-          printf 'APP_ID=6\nAPP_HASH=eb06d4abfb49dc3eeb1aeb98ae0f581e\nMAPS_V2_API=x\n' > API_KEYS
+          printf 'APP_ID=6\nAPP_HASH="eb06d4abfb49dc3eeb1aeb98ae0f581e"\nMAPS_V2_API=x\n' > API_KEYS
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -46,7 +44,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install NDK
-        run: sdkmanager --install ndk\;21.4.7075529 cmake\;3.22.1
+        run: sdkmanager --install 'ndk;21.4.7075529' 'cmake;3.22.1'
 
       - name: Build
         run: |
