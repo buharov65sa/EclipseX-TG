@@ -28,7 +28,32 @@ jobs:
         run: |
           cd source
           printf 'APP_ID=6\nAPP_HASH=eb06d4abfb49dc3eeb1aeb98ae0f581e\nMAPS_V2_API=x\n' > API_KEYS
-          echo '{}' > TMessagesProj/google-services.json
+          cat > TMessagesProj/google-services.json << 'GEOF'
+          {
+            project_info: {
+              project_number: 0,
+              project_id: eclipsextg
+            },
+            client: [
+              {
+                client_info: {
+                  mobilesdk_app_id: 1:0:android:0000000000000000,
+                  android_client_info: {
+                    package_name: com.eclipsextg.messenger
+                  }
+                },
+                oauth_client: [],
+                api_key: [{current_key: AIzaSy00000000000000000000000000000000000}],
+                services: {
+                  analytics_service: {status: 1},
+                  appinvite_service: {status: 1},
+                  ads_service: {status: 2}
+                }
+              }
+            ],
+            configuration_version: 1
+          }
+GEOF
 
       - name: Setup Java
         uses: actions/setup-java@v4
