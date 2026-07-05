@@ -15,7 +15,30 @@ jobs:
           git clone https://github.com/AyuGram/AyuGram4A.git source
           cd source
           rm -f .gitmodules
-          rm -rf TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary
+
+      - name: Create proprietary stubs
+        run: |
+          mkdir -p source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary
+          cat > source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary/AyuHistoryHook.java << 'JEOF'
+package com.radolyn.ayugram.proprietary;
+import org.telegram.messenger.MessageObject;
+public class AyuHistoryHook {
+    public static final boolean INJECTED = false;
+    public static boolean onMessageReceive(long dialogId, int maxId, int offset) { return false; }
+    public static boolean shouldSkipMsg(MessageObject messageObject) { return false; }
+    public static void onMsgReceive(MessageObject messageObject) {}
+}
+JEOF
+          cat > source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary/AyuMessageUtils.java << 'JEOF2'
+package com.radolyn.ayugram.proprietary;
+import org.telegram.tgnet.TLRPC;
+import org.telegram.messenger.MessageObject;
+public class AyuMessageUtils {
+    public static boolean canShowMessage(TLRPC.Message message, boolean isBot) { return true; }
+    public static boolean showEdited(MessageObject messageObject) { return false; }
+    public static boolean skipRead(MessageObject messageObject) { return false; }
+}
+JEOF2
 
       - name: Patch
         run: |
@@ -23,15 +46,10 @@ jobs:
           sed -i s/APP_PACKAGE=com.radolyn.ayugram/APP_PACKAGE=com.eclipsextg.messenger/ gradle.properties
           sed -i 's|<string name=AppName>Telegram</string>|<string name=AppName>EclipseX TG</string>|' TMessagesProj/src/main/res/values/strings.xml
           sed -i 's|com.exteragram.messenger.DefaultIcon|com.eclipsextg.messenger.DefaultIcon|' TMessagesProj/src/main/AndroidManifest.xml
-          # Remove Google Services plugin
           sed -i '/google-services/d' TMessagesProj/build.gradle
           sed -i '/com.google.gms.google-services/d' build.gradle
-          # Fix proprietary imports
-          sed -i '/import com.radolyn.ayugram.proprietary/d' TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
-          sed -i 's|import com.radolyn.ayugram.proprietary|// removed proprietary|' TMessagesProj/src/main/java/com/radolyn/ayugram/ui/AyuMessageHistory.java
-          sed -i 's|import com.radolyn.ayugram.proprietary|// removed proprietary|' TMessagesProj/src/main/java/com/radolyn/ayugram/messages/AyuMessagesController.java
 
-      - name: Create config files
+      - name: Create API keys
         run: |
           cd source
           printf 'APP_ID=6\nAPP_HASH=eb06d4abfb49dc3eeb1aeb98ae0f581e\nMAPS_V2_API=x\n' > API_KEYS
