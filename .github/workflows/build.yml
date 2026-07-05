@@ -19,26 +19,8 @@ jobs:
       - name: Create proprietary stubs
         run: |
           mkdir -p source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary
-          cat > source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary/AyuHistoryHook.java << 'JEOF'
-package com.radolyn.ayugram.proprietary;
-import org.telegram.messenger.MessageObject;
-public class AyuHistoryHook {
-    public static final boolean INJECTED = false;
-    public static boolean onMessageReceive(long dialogId, int maxId, int offset) { return false; }
-    public static boolean shouldSkipMsg(MessageObject messageObject) { return false; }
-    public static void onMsgReceive(MessageObject messageObject) {}
-}
-JEOF
-          cat > source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary/AyuMessageUtils.java << 'JEOF2'
-package com.radolyn.ayugram.proprietary;
-import org.telegram.tgnet.TLRPC;
-import org.telegram.messenger.MessageObject;
-public class AyuMessageUtils {
-    public static boolean canShowMessage(TLRPC.Message message, boolean isBot) { return true; }
-    public static boolean showEdited(MessageObject messageObject) { return false; }
-    public static boolean skipRead(MessageObject messageObject) { return false; }
-}
-JEOF2
+          printf 'package com.radolyn.ayugram.proprietary;\nimport org.telegram.messenger.MessageObject;\npublic class AyuHistoryHook {\npublic static final boolean INJECTED = false;\npublic static boolean onMessageReceive(long dialogId, int maxId, int offset) { return false; }\npublic static boolean shouldSkipMsg(MessageObject messageObject) { return false; }\npublic static void onMsgReceive(MessageObject messageObject) {}\n}\n' > source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary/AyuHistoryHook.java
+          printf 'package com.radolyn.ayugram.proprietary;\nimport org.telegram.tgnet.TLRPC;\nimport org.telegram.messenger.MessageObject;\npublic class AyuMessageUtils {\npublic static boolean canShowMessage(TLRPC.Message message, boolean isBot) { return true; }\npublic static boolean showEdited(MessageObject messageObject) { return false; }\npublic static boolean skipRead(MessageObject messageObject) { return false; }\n}\n' > source/TMessagesProj/src/main/java/com/radolyn/ayugram/proprietary/AyuMessageUtils.java
 
       - name: Patch
         run: |
